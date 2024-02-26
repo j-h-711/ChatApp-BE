@@ -8,10 +8,25 @@ module.exports = function (io) {
   io.on("connection", async (socket) => {
     console.log("user is connected");
 
-    // 유저정보 저장
-    socket.on("login", async (userName, cb) => {
+    // 회원 가입
+    socket.on("register", async (regisName, regisPassword, cb) => {
+      // console.log(regisName, regisPassword);
       try {
-        const user = await userController.saveUser(userName, socket.id);
+        await userController.registerUser(regisName, regisPassword);
+        cb({ ok: true, message: "User registered successfully" });
+      } catch (error) {
+        cb({ ok: false, error: error.message });
+      }
+    });
+
+    // 유저정보 저장
+    socket.on("login", async (userName, password, cb) => {
+      try {
+        const user = await userController.loginUser(
+          userName,
+          password,
+          socket.id
+        );
         cb({ ok: true, data: user });
       } catch (e) {
         cb({ ok: false, error: e.message });
