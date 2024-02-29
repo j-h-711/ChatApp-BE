@@ -65,6 +65,23 @@ module.exports = function (io) {
 
     socket.emit("rooms", await roomController.getAllRooms()); // 룸 리스트 보내기
 
+    socket.on("leaveRoom", async (_, cb) => {
+      try {
+        const user = await userController.checkUser(socket.id);
+        await roomController.leaveRoom(user);
+        const leaveMessage = {
+          chat: `${user.name} left this room`,
+          user: { id: null, name: "system" },
+        };
+        socket.broadcast.to(user.room.toString()).emit("message", leaveMessage); // socket.broadcast의 경우 io.to()와 달리,나를 제외한 채팅방에 모든 맴버에게 메세지를 보낸다
+        io.emit("rooms", await roomController.getAllRooms());
+        socket.leave(user.room.toString()); // join했던 방을 떠남
+        cb({ ok: true });
+      } catch (error) {
+        cb({ ok: false, message: error.message });
+      }
+    });
+
     socket.on("disconnect", () => {
       console.log("user is disconnected");
     });

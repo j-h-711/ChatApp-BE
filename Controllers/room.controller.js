@@ -19,4 +19,13 @@ roomController.joinRoom = async (roomId, user) => {
   await user.save();
 };
 
+roomController.leaveRoom = async (user) => {
+  const room = await Room.findById(user.room);
+  if (!room) {
+    throw new Error("Room not found");
+  }
+  room.members.remove(user._id);
+  await room.save();
+};
+
 module.exports = roomController;
