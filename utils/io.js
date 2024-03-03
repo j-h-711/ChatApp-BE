@@ -82,6 +82,32 @@ module.exports = function (io) {
       }
     });
 
+    socket.on("addRoom", async (roomName, cb) => {
+      try {
+        const user = await userController.checkUser(socket.id);
+        const newRoom = await roomController.addRoom(roomName, user._id);
+        io.emit("rooms", await roomController.getAllRooms());
+        cb({ ok: true, room: newRoom });
+      } catch (error) {
+        cb({ ok: false, error: error.message });
+      }
+    });
+
+    socket.on("deleteRoom", async (roomId, cb) => {
+      try {
+        const user = await userController.checkUser(socket.id);
+        const result = await roomController.deleteRoom(roomId, user._id);
+        if (result) {
+          io.emit("rooms", await roomController.getAllRooms());
+          cb({ ok: true });
+        } else {
+          throw new Error("Failed to delete room");
+        }
+      } catch (error) {
+        cb({ ok: false, error: error.message });
+      }
+    });
+
     socket.on("disconnect", () => {
       console.log("user is disconnected");
     });

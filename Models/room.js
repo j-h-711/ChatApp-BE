@@ -10,6 +10,7 @@ const roomSchema = new mongoose.Schema(
         ref: "User",
       },
     ],
+    host: String,
   },
   { timestamp: true }
 );

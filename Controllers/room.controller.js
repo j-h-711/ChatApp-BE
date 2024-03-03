@@ -28,4 +28,36 @@ roomController.leaveRoom = async (user) => {
   await room.save();
 };
 
+// 방 신규 추가
+roomController.addRoom = async (roomName, userId) => {
+  try {
+    const newRoom = new Room({ room: roomName, host: userId });
+    await newRoom.save();
+    return newRoom;
+  } catch (error) {
+    throw new Error("Failed to add room");
+  }
+};
+
+// 방 삭제
+roomController.deleteRoom = async (roomId, userId) => {
+  try {
+    const room = await Room.findById(roomId);
+
+    //현재 클라이언트쪽에서 host와 로그인 유저 확인함
+    // TODO: 아래 주석 부분쪽에서 서버단에서 유저 재검증 필요
+
+    // if (!room) {
+    //   throw new Error("Room not found");
+    // }
+    // if (room.host !== userId) {
+    //   throw new Error("You are not authorized to delete this room");
+    // }
+    await room.deleteOne();
+    return true;
+  } catch (error) {
+    throw new Error(error.message);
+  }
+};
+
 module.exports = roomController;
