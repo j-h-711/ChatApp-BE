@@ -6,7 +6,11 @@ module.exports = function (io) {
   // io와 관련된 모든 작업
 
   io.on("connection", async (socket) => {
-    console.log("user is connected");
+    console.log("Socket connected with ID:", socket.id);
+
+    socket.on("disconnect", (reason) => {
+      console.log("Socket disconnected with ID:", socket.id, "Reason:", reason);
+    });
 
     // 회원 가입
     socket.on("register", async (regisName, regisPassword, cb) => {
@@ -34,6 +38,7 @@ module.exports = function (io) {
     });
 
     socket.on("joinRoom", async (rid, cb) => {
+      console.log("조인룸 소켓 확인:", socket.id);
       try {
         const user = await userController.checkUser(socket.id); // 일단 유저정보들고오기
         await roomController.joinRoom(rid, user); // 1~2작업
@@ -41,7 +46,7 @@ module.exports = function (io) {
 
         // 기존 채팅내용 가져오기
         const room = await roomController.getRoomById(rid);
-        console.log("룸 채팅내용", room.chats);
+        // console.log("룸 채팅내용", room.chats);
         const chatHistory = room.chats; // 방의 chat 기록
 
         socket.emit("messageHistory", chatHistory);
@@ -73,6 +78,7 @@ module.exports = function (io) {
     socket.emit("rooms", await roomController.getAllRooms()); // 룸 리스트 보내기
 
     socket.on("leaveRoom", async (_, cb) => {
+      console.log("리브룸 소켓 확인:", socket.id);
       try {
         const user = await userController.checkUser(socket.id);
         await roomController.leaveRoom(user);
@@ -90,14 +96,18 @@ module.exports = function (io) {
     });
 
     socket.on("addRoom", async (roomName, cb) => {
+      console.log("애드룸 - Socket ID before:", socket.id);
       try {
         const user = await userController.checkUser(socket.id);
+        console.log("User found:", user);
         const newRoom = await roomController.addRoom(roomName, user._id);
         io.emit("rooms", await roomController.getAllRooms());
         cb({ ok: true, room: newRoom });
       } catch (error) {
+        console.error("Add Room Error:", error.message);
         cb({ ok: false, error: error.message });
       }
+      console.log("애드룸 - Socket ID after:", socket.id);
     });
 
     socket.on("deleteRoom", async (roomId, cb) => {
