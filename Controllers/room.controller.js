@@ -1,6 +1,18 @@
 const Room = require("../Models/room");
 const roomController = {};
 
+roomController.getRoomById = async (roomId) => {
+  try {
+    const room = await Room.findById(roomId);
+    if (!room) {
+      throw new Error("해당 방을 찾을 수 없습니다.");
+    }
+    return room;
+  } catch (error) {
+    throw new Error(`방을 조회하는 중 오류 발생: ${error.message}`);
+  }
+};
+
 roomController.getAllRooms = async () => {
   const roomList = await Room.find({});
   return roomList;

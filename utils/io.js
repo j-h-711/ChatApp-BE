@@ -38,6 +38,13 @@ module.exports = function (io) {
         const user = await userController.checkUser(socket.id); // 일단 유저정보들고오기
         await roomController.joinRoom(rid, user); // 1~2작업
         socket.join(user.room.toString()); //3 작업
+
+        // 기존 채팅내용 가져오기
+        const room = await roomController.getRoomById(rid);
+        console.log("룸 채팅내용", room.chats);
+        const chatHistory = room.chats; // 방의 chat 기록
+
+        socket.emit("messageHistory", chatHistory);
         const welcomeMessage = {
           chat: `${user.name} is joined to this room`,
           user: { id: null, name: "system" },

@@ -10,12 +10,12 @@ const chatSchema = new mongoose.Schema(
       },
       name: String,
     },
-    room: {
-      type: mongoose.Schema.ObjectId,
-      ref: "Room",
+    createdAt: {
+      type: Date,
+      default: Date.now,
     },
   },
-  { timestamp: true }
+  { timestamps: true }
 );
 
 module.exports = mongoose.model("Chat", chatSchema);

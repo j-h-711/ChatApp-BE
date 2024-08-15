@@ -1,5 +1,20 @@
 const mongoose = require("mongoose");
 
+const chatSchema = new mongoose.Schema({
+  chat: String,
+  user: {
+    id: {
+      type: mongoose.Schema.ObjectId,
+      ref: "User",
+    },
+    name: String,
+  },
+  createdAt: {
+    type: Date,
+    default: Date.now,
+  },
+});
+
 const roomSchema = new mongoose.Schema(
   {
     room: String,
@@ -11,7 +26,8 @@ const roomSchema = new mongoose.Schema(
       },
     ],
     host: String,
+    chats: [chatSchema],
   },
-  { timestamp: true }
+  { timestamps: true }
 );
 module.exports = mongoose.model("Room", roomSchema);
