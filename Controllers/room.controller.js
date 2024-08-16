@@ -18,7 +18,7 @@ roomController.getAllRooms = async () => {
   return roomList;
 };
 
-roomController.joinRoom = async (roomId, user) => {
+roomController.joinRoom = async (roomId, password, user) => {
   const room = await Room.findById(roomId);
   if (!room) {
     throw new Error("해당 방이 없습니다.");
@@ -41,9 +41,13 @@ roomController.leaveRoom = async (user) => {
 };
 
 // 방 신규 추가
-roomController.addRoom = async (roomName, userId) => {
+roomController.addRoom = async (roomName, roomPassword, userId) => {
   try {
-    const newRoom = new Room({ room: roomName, host: userId });
+    const newRoom = new Room({
+      room: roomName,
+      password: roomPassword,
+      host: userId,
+    });
     await newRoom.save();
     return newRoom;
   } catch (error) {

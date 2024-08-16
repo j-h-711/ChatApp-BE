@@ -37,11 +37,11 @@ module.exports = function (io) {
       }
     });
 
-    socket.on("joinRoom", async (rid, cb) => {
+    socket.on("joinRoom", async (rid, roomname, cb = () => {}) => {
       console.log("조인룸 소켓 확인:", socket.id);
       try {
         const user = await userController.checkUser(socket.id); // 일단 유저정보들고오기
-        await roomController.joinRoom(rid, user); // 1~2작업
+        await roomController.joinRoom(rid, roomname, user); // 1~2작업
         socket.join(user.room.toString()); //3 작업
 
         // 기존 채팅내용 가져오기
@@ -95,12 +95,16 @@ module.exports = function (io) {
       }
     });
 
-    socket.on("addRoom", async (roomName, cb) => {
+    socket.on("addRoom", async (roomName, roomPassword, cb) => {
       console.log("애드룸 - Socket ID before:", socket.id);
       try {
         const user = await userController.checkUser(socket.id);
         console.log("User found:", user);
-        const newRoom = await roomController.addRoom(roomName, user._id);
+        const newRoom = await roomController.addRoom(
+          roomName,
+          roomPassword,
+          user._id
+        );
         io.emit("rooms", await roomController.getAllRooms());
         cb({ ok: true, room: newRoom });
       } catch (error) {

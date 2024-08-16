@@ -18,6 +18,7 @@ const chatSchema = new mongoose.Schema({
 const roomSchema = new mongoose.Schema(
   {
     room: String,
+    password: { type: String, required: true },
     members: [
       {
         type: mongoose.Schema.ObjectId,
