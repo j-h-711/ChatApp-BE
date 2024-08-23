@@ -96,14 +96,13 @@ module.exports = function (io) {
     });
 
     socket.on("addRoom", async (roomName, roomPassword, cb) => {
-      console.log("애드룸 - Socket ID before:", socket.id);
       try {
         const user = await userController.checkUser(socket.id);
-        console.log("User found:", user);
+        const userId = user._id;
         const newRoom = await roomController.addRoom(
           roomName,
           roomPassword,
-          user._id
+          userId
         );
         io.emit("rooms", await roomController.getAllRooms());
         cb({ ok: true, room: newRoom });
@@ -111,7 +110,6 @@ module.exports = function (io) {
         console.error("Add Room Error:", error.message);
         cb({ ok: false, error: error.message });
       }
-      console.log("애드룸 - Socket ID after:", socket.id);
     });
 
     socket.on("deleteRoom", async (roomId, cb) => {

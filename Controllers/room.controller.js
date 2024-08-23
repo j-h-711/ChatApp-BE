@@ -47,11 +47,14 @@ roomController.addRoom = async (roomName, roomPassword, userId) => {
       room: roomName,
       password: roomPassword,
       host: userId,
+      members: [],
+      chats: [],
     });
     await newRoom.save();
     return newRoom;
   } catch (error) {
-    throw new Error("Failed to add room");
+    console.error("Error while adding room:", error.message);
+    throw new Error(`Failed to add room`);
   }
 };
 

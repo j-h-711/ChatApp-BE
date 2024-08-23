@@ -22,8 +22,8 @@ const roomSchema = new mongoose.Schema(
     members: [
       {
         type: mongoose.Schema.ObjectId,
-        unique: true,
         ref: "User",
+        unique: false,
       },
     ],
     host: String,
